@@ -1,0 +1,165 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  linux_build:
+    name: Build Linux version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Compile Linux version
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --verbose
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      - name: Package Linux archive
+        run: |
+          mkdir -p "./target/archive-linux-64/bin"
+          cp -v "./target/release/life" "./target/archive-linux-64/bin/"
+          cd "./target/archive-linux-64"
+          tar cvzf "life-${{ steps.get_version.outputs.VERSION }}-linux-64.tgz" *
+      - name: Upload Linux archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: linux_build
+          path: target/archive-linux-64/life-${{ steps.get_version.outputs.VERSION }}-linux-64.tgz
+
+  windows_build:
+    name: Build Windows version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Compile Windows version
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --verbose --target=x86_64-pc-windows-gnu
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      - name: Package Windows archive
+        run: |
+          mkdir -p "./target/archive-windows-64"
+          cp -v "./target/x86_64-pc-windows-gnu/release/life.exe" "./target/archive-windows-64/"
+          cd "./target/archive-windows-64"
+          zip "life-${{ steps.get_version.outputs.VERSION }}-windows-64.zip" *
+      - name: Upload Windows archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: windows_build
+          path: target/archive-windows-64/life-${{ steps.get_version.outputs.VERSION }}-windows-64.zip
+
+  macos_build:
+    name: Build macOS version
+    runs-on: macOS-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Compile macOS Version
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --verbose
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      - name: Package macOS Archive
+        run: |
+          mkdir -p "./target/archive-macos-64/bin"
+          cp -v "./target/release/life" "./target/archive-macos-64/bin/"
+          cd "./target/archive-macos-64"
+          tar cvzf "life-${{ steps.get_version.outputs.VERSION }}-macos-64.tgz" *
+      - name: Upload macOS Archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: macos_build
+          path: target/archive-macos-64/life-${{ steps.get_version.outputs.VERSION }}-macos-64.tgz
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [linux_build, windows_build, macos_build]
+    steps:
+      - name: Download Linux archive
+        uses: actions/download-artifact@v1
+        with:
+          name: linux_build
+          path: ./target/archive-linux-64/
+      - name: Download Windows archive
+        uses: actions/download-artifact@v1
+        with:
+          name: windows_build
+          path: ./target/archive-windows-64/
+      - name: Download macOS archive
+        uses: actions/download-artifact@v1
+        with:
+          name: macos_build
+          path: ./target/archive-macos-64/
+      - name: Get version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+      - name: Upload Linux release
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/archive-linux-64/life-${{ steps.get_version.outputs.VERSION }}-linux-64.tgz
+          asset_name: life-${{ steps.get_version.outputs.VERSION }}-linux-64.tgz
+          asset_content_type: application/gzip
+      - name: Upload Windows release
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/archive-windows-64/life-${{ steps.get_version.outputs.VERSION }}-windows-64.zip
+          asset_name: life-${{ steps.get_version.outputs.VERSION }}-windows-64.zip
+          asset_content_type: application/zip
+      - name: Upload macOS Release
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/archive-macos-64/life-${{ steps.get_version.outputs.VERSION }}-macos-64.tgz
+          asset_name: life-${{ steps.get_version.outputs.VERSION }}-macos-64.tgz
+          asset_content_type: application/gzip
