@@ -7,6 +7,7 @@ A simple [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) w
 - [x] Beautifully display grids in the console!
 - [x] Start with a new randomized grid.
 - [x] Customize starting grid width, height and amount of living cells.
+- [x] Customize grid update frequency.
 
 ## Usage
 
@@ -50,6 +51,7 @@ OPTIONS:
     -a, --alive <alive-ratio>             Starting grid ratio of alive cells, between 0 and 1 [default: 0.3]
     -h, --height <grid-height>            Starting grid height, at least 3 [default: 10]
     -w, --width <grid-width>              Starting grid width, at least 3 [default: 20]
+    -f, --frequency <update-frequency>    Cell generation update frequency in Hz [default: 1.0]
 ```
 
 ## Development

@@ -23,6 +23,9 @@ struct Arguments {
     #[structopt(short = "a", long = "alive", default_value = "0.3")]
     /// Starting grid ratio of alive cells, between 0 and 1
     alive_ratio: f64,
+    #[structopt(short = "f", long = "frequency", default_value = "1.0")]
+    /// Cell generation update frequency in Hz
+    update_frequency: f64,
 }
 
 fn main() {
@@ -33,10 +36,15 @@ fn main() {
         args.alive_ratio < 0.0 || args.alive_ratio > 1.0,
         "alive ratio not between 0 and 1",
     );
+    exit_if(
+        args.update_frequency <= 0.0 || args.update_frequency > 1000.0,
+        "update frequency not included in ]0, 1000]",
+    );
 
     let width = args.width;
     let height = args.height;
     let alive_ratio = args.alive_ratio;
+    let sleep_duration = time::Duration::from_secs_f64(1.0 / args.update_frequency);
 
     let mut grid = Grid::new((width, height));
     let mut rng = rand::thread_rng();
@@ -47,7 +55,7 @@ fn main() {
         .for_each(|(x, y)| grid.set_cell((x, y), CellState::ALIVE));
     loop {
         print_grid(&grid);
-        thread::sleep(time::Duration::from_millis(250));
+        thread::sleep(sleep_duration);
         grid = generate_next(&grid);
     }
 }
