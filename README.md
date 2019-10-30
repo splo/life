@@ -6,6 +6,7 @@ A simple [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) w
 
 - [x] Beautifully display grids in the console!
 - [x] Start with a new randomized grid.
+- [x] Customize starting grid width, height and amount of living cells.
 
 ## Usage
 
@@ -34,6 +35,22 @@ Output:
 ```
 
 - Press `Ctrl-C` to stop the game.
+
+You can specify the following options:
+
+```
+USAGE:
+    life [OPTIONS]
+
+FLAGS:
+        --help       Prints help information
+    -V, --version    Prints version information
+
+OPTIONS:
+    -a, --alive <alive-ratio>             Starting grid ratio of alive cells, between 0 and 1 [default: 0.3]
+    -h, --height <grid-height>            Starting grid height, at least 3 [default: 10]
+    -w, --width <grid-width>              Starting grid width, at least 3 [default: 20]
+```
 
 ## Development
 
