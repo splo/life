@@ -59,6 +59,7 @@ OPTIONS:
 ### Requirements
 
 - [Rust](https://rustup.rs/) 2018 edition.
+- [`git-chglog`](https://github.com/git-chglog/git-chglog) to generate a changelog.
 
 ### Building, Testing and Running
 
@@ -71,4 +72,30 @@ cargo test
 cargo run
 # Build and run the release version
 cargo run --release
+```
+
+### Committing
+
+This project adheres to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specifications.
+
+All commit messages should follow the following template:
+
+```
+[optional type: ]<description>
+
+[optional body]
+```
+
+- No need for a `scope` part.
+- Only the `feat` and `fix` types are used.
+- Description should start with an upper case character and should **not** finish with a period.
+
+### Generating Changelog
+
+This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) principle.
+
+In order to generate a changelog, after committing your latest changes, run the following commands.
+
+```bash
+git-chglog -c .chglog/changelog.yml > ./CHANGELOG.md
 ```
