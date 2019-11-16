@@ -1,6 +1,6 @@
 [package]
 name = "life"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Sébastien Job <sebastien.job@gmail.com>"]
 edition = "2018"
 description = "A game of life."
