@@ -6,6 +6,6 @@ edition = "2018"
 description = "A game of life."
 
 [dependencies]
-rand = "0.7.2"
-structopt = "0.3.3"
+rand = "0.7"
+structopt = "0.3"
 clap = "2.33"
