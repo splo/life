@@ -1,0 +1,23 @@
+style: github
+template: RELEASE.tpl.md
+info:
+  title: RELEASE_NOTES
+  repository_url: https://github.com/splo/life
+options:
+  commits:
+    filters:
+      Type:
+        - feat
+        - fix
+  commit_groups:
+    title_maps:
+      feat: ":sparkles: New Features"
+      fix: ":bug: Bug Fixes"
+  header:
+    pattern: "^(\\w*)\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE

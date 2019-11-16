@@ -114,13 +114,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
-      - name: Generate release notes
-        run: |
-          mkdir -p target
-          ./bin/gen_release_notes.sh > ./target/release_notes.md
       - name: Get version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\/v/}
+      - name: Generate release notes
+        run: |
+          # Temporary fix for https://github.com/actions/setup-go/issues/14
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go get -u github.com/git-chglog/git-chglog/cmd/git-chglog
+          mkdir -p target
+          git-chglog -c .chglog/release.yml $(git describe --tags) > ./target/release_notes.md
       - name: Download Linux archive
         uses: actions/download-artifact@v1
         with:
