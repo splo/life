@@ -54,6 +54,7 @@ OPTIONS:
     -a, --alive <alive-ratio>             Starting grid ratio of alive cells, between 0 and 1 [default: 0.3]
     -h, --height <grid-height>            Starting grid height, at least 3 [default: 10]
     -w, --width <grid-width>              Starting grid width, at least 3 [default: 20]
+    -p, --port <port>                     Web server port to listen to [default: 8090]
     -f, --frequency <update-frequency>    Cell generation update frequency in Hz [default: 1.0]
 ```
 

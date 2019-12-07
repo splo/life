@@ -29,6 +29,9 @@ struct Arguments {
     #[structopt(short = "f", long = "frequency", default_value = "1.0")]
     /// Cell generation update frequency in Hz
     update_frequency: f64,
+    #[structopt(short = "p", long = "port", default_value = "8090")]
+    /// Web server port to listen to
+    port: u16,
 }
 
 struct GridData {
@@ -36,7 +39,7 @@ struct GridData {
 }
 
 fn main() {
-    let args = Arguments::from_args();
+    let args: Arguments = Arguments::from_args();
     exit_if(args.width < 3, "width < 3");
     exit_if(args.height < 3, "height < 3");
     exit_if(
@@ -52,6 +55,7 @@ fn main() {
     let height = args.height;
     let alive_ratio = args.alive_ratio;
     let sleep_duration = time::Duration::from_secs_f64(1.0 / args.update_frequency);
+    let port = args.port;
 
     let mut grid = Grid::new((width, height));
     let mut rng = rand::thread_rng();
@@ -71,7 +75,7 @@ fn main() {
             .route("/index.js", web::get().to(js_handler))
             .route("/grid", web::get().to(grid_handler))
     })
-    .bind("127.0.0.1:8090")
+    .bind(format!("0.0.0.0:{}", port))
     .expect("Error while binding the socket address");
     thread::spawn(move || loop {
         thread::sleep(sleep_duration);
@@ -81,7 +85,7 @@ fn main() {
             guard.grid = generate_next(&guard.grid);
         }
     });
-    println!("Server running at http://localhost:{}/", 8090);
+    println!("Server running at http://localhost:{}/", port);
     server.run().expect("Error while running server");
 }
 
