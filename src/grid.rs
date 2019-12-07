@@ -1,10 +1,10 @@
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum CellState {
     DEAD,
     ALIVE,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Grid {
     width: usize,
     height: usize,

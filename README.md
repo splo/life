@@ -4,7 +4,9 @@ A simple [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) w
 
 ## Features
 
+- [x] Continuously update the grid of cells.
 - [x] Beautifully display grids in the console!
+- [x] Serve a web page that displays the current grid in HTML.
 - [x] Start with a new randomized grid.
 - [x] Customize starting grid width, height and amount of living cells.
 - [x] Customize grid update frequency.
@@ -18,9 +20,10 @@ A simple [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) w
 ./bin/life
 ```
 
-Output:
+Example output:
 
 ```
+Server running at http://localhost:8090/
 /--------------------\
 |   o   o            |
 |oo     o  o   o  o o|
