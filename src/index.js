@@ -1,10 +1,12 @@
+'use strict';
+
 const canvas = window.document.getElementById("canvas");
 canvas.style.height = (window.innerHeight - 200) + "px";
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  var request = new XMLHttpRequest();
+window.document.addEventListener("DOMContentLoaded", function () {
+  const request = new XMLHttpRequest();
   request.open("GET", "/grid", true);
   request.onreadystatechange = function () {
-    if (request.readyState != 4 || request.status != 200) {
+    if (request.readyState !== 4 || request.status !== 200) {
       return;
     }
     const grid = JSON.parse(request.responseText);
@@ -26,12 +28,11 @@ function displayGrid(grid) {
 }
 
 function buildStage(dimensions, containerId) {
-  const stage = new Konva.Stage({
+  return new Konva.Stage({
     container: containerId,
     width: dimensions.width,
     height: dimensions.height
   });
-  return stage;
 }
 
 function buildGridLayer(dimensions, grid) {
@@ -44,7 +45,7 @@ function buildGridLayer(dimensions, grid) {
   const columnHeight = gridHeight / columns;
   const rowWidth = gridWidth / rows;
 
-  var gridLayer = new Konva.Layer();
+  const gridLayer = new Konva.Layer();
   for (let column = 0; column <= columns; ++column) {
     gridLayer.add(
       new Konva.Line({
@@ -86,9 +87,9 @@ function buildCellsLayer(dimensions, grid) {
   const gridHeight = dimensions.height - 2 * offset;
   const columnHeight = gridHeight / columns;
   const rowWidth = gridWidth / rows;
-  var circleSize = Math.min(rowWidth, columnHeight);
+  const circleSize = Math.min(rowWidth, columnHeight);
 
-  var cellsLayer = new Konva.Layer();
+  const cellsLayer = new Konva.Layer();
   for (let column = 0; column < columns; ++column) {
     for (let row = 0; row < rows; ++row) {
       if (cells[column][row]) {
