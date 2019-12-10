@@ -1,16 +1,16 @@
 const canvas = window.document.getElementById("canvas");
 canvas.style.height = (window.innerHeight - 200) + "px";
-window.document.addEventListener("DOMContentLoaded", function(event) {
-    var request = new XMLHttpRequest();
-    request.open("GET", "/grid", true);
-    request.onreadystatechange = function () {
-        if (request.readyState != 4 || request.status != 200) {
-            return;
-        }
-        const grid = JSON.parse(request.responseText);
-        displayGrid(grid);
-    };
-    request.send();
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  var request = new XMLHttpRequest();
+  request.open("GET", "/grid", true);
+  request.onreadystatechange = function () {
+    if (request.readyState != 4 || request.status != 200) {
+      return;
+    }
+    const grid = JSON.parse(request.responseText);
+    displayGrid(grid);
+  };
+  request.send();
 });
 
 function displayGrid(grid) {
