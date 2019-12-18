@@ -1,18 +1,21 @@
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::{thread, time};
 
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
 use rand::Rng;
 use structopt::StructOpt;
 
 use crate::generation::generate_next;
 use crate::grid::{CellState, Grid};
 use crate::grid_printer::print_grid;
+use crate::server::run_server;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::Duration;
 
 mod generation;
 mod grid;
 mod grid_printer;
 mod json;
+mod server;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "life", about, author)]
@@ -34,7 +37,8 @@ struct Arguments {
     port: u16,
 }
 
-struct GridData {
+#[derive(Debug)]
+pub struct State {
     grid: Grid,
 }
 
@@ -57,6 +61,27 @@ fn main() {
     let sleep_duration = time::Duration::from_secs_f64(1.0 / args.update_frequency);
     let port = args.port;
 
+    let grid = build_random_grid(width, height, alive_ratio);
+
+    let logic_state = Arc::new(Mutex::new(State { grid }));
+    let server_state = logic_state.clone();
+    let thread_running = Arc::new(AtomicBool::new(true));
+    let thread_running_ref = thread_running.clone();
+
+    let logic_handle =
+        thread::spawn(move || run_logic(sleep_duration, logic_state, thread_running));
+    let server_handle = thread::spawn(move || run_server(port, server_state));
+
+    server_handle
+        .join()
+        .expect("Error while waiting for server thread");
+    thread_running_ref.store(false, Ordering::Relaxed);
+    logic_handle
+        .join()
+        .expect("Error while waiting for logic thread");
+}
+
+fn build_random_grid(width: usize, height: usize, alive_ratio: f64) -> Grid {
     let mut grid = Grid::new((width, height));
     let mut rng = rand::thread_rng();
     let (width, height) = (grid.width(), grid.height());
@@ -64,46 +89,22 @@ fn main() {
         .flat_map(|y| (0..width).map(move |x| (x, y)))
         .filter(|_| rng.gen_bool(alive_ratio))
         .for_each(|(x, y)| grid.set_cell((x, y), CellState::ALIVE));
+    grid
+}
 
-    let data = web::Data::new(Mutex::new(GridData { grid }));
-    let logic_data = data.clone();
-
-    let server = HttpServer::new(move || {
-        App::new()
-            .register_data(data.clone())
-            .route("/", web::get().to(index_handler))
-            .route("/index.js", web::get().to(js_handler))
-            .route("/grid", web::get().to(grid_handler))
-    })
-    .bind(format!("0.0.0.0:{}", port))
-    .expect("Error while binding the socket address");
-    thread::spawn(move || loop {
+fn run_logic(
+    sleep_duration: Duration,
+    logic_state: Arc<Mutex<State>>,
+    thread_running: Arc<AtomicBool>,
+) {
+    while thread_running.load(Ordering::Relaxed) {
         thread::sleep(sleep_duration);
         {
-            let mut guard = logic_data.lock().expect("Error while locking mutex");
+            let mut guard = logic_state.lock().expect("Error while locking mutex");
             print_grid(&guard.grid);
             guard.grid = generate_next(&guard.grid);
         }
-    });
-    println!("Server running at http://localhost:{}/", port);
-    server.run().expect("Error while running server");
-}
-
-fn index_handler() -> impl Responder {
-    static INDEX_HTML: &str = include_str!("index.html");
-    HttpResponse::Ok().body(INDEX_HTML)
-}
-
-fn js_handler() -> impl Responder {
-    static INDEX_HTML: &str = include_str!("index.js");
-    HttpResponse::Ok().body(INDEX_HTML)
-}
-
-fn grid_handler(state: web::Data<Mutex<GridData>>) -> impl Responder {
-    let guard = state.lock().expect("Error while locking mutex");
-    HttpResponse::Ok()
-        .content_type("application/json")
-        .body(serde_json::to_string(&guard.grid).expect("Error while serializing grid"))
+    }
 }
 
 fn exit_if(error_condition: bool, message: &str) {
