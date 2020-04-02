@@ -5,14 +5,14 @@ info:
   repository_url: https://github.com/splo/life
 options:
   commits:
-     filters:
-       Type:
-         - feat
-         - fix
+    filters:
+      Type:
+        - feat
+        - fix
   commit_groups:
-     title_maps:
-       feat: New Features
-       fix: Bug Fixes
+    title_maps:
+      feat: New Features
+      fix: Bug Fixes
   header:
     pattern: "^(\\w*)\\:\\s(.*)$"
     pattern_maps:
