@@ -2,6 +2,8 @@
 
 A simple [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) written in Rust.
 
+![Web UI Screenshot](./screenshot.png)
+
 ## Features
 
 - [x] Continuously update the grid of cells.
