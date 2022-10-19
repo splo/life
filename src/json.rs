@@ -17,7 +17,7 @@ impl Serialize for Grid {
         (0..self.height()).for_each(|y| {
             let mut line: Vec<bool> = Vec::new();
             (0..self.width()).for_each(|x| {
-                line.push(self.get_cell((x, y)) == CellState::ALIVE);
+                line.push(self.get_cell((x, y)) == CellState::Alive);
             });
             cells.push(line);
         });
@@ -63,9 +63,9 @@ impl<'de> Deserialize<'de> for Grid {
                         grid.set_cell(
                             (x, y),
                             if *cells.get(y).unwrap().get(x).unwrap() {
-                                CellState::ALIVE
+                                CellState::Alive
                             } else {
-                                CellState::DEAD
+                                CellState::Dead
                             },
                         );
                     });
@@ -85,11 +85,11 @@ mod tests {
     #[test]
     fn serialization() {
         let mut grid = Grid::new((3, 4));
-        grid.set_cell((2, 0), CellState::ALIVE);
-        grid.set_cell((0, 3), CellState::ALIVE);
-        grid.set_cell((1, 3), CellState::ALIVE);
-        grid.set_cell((2, 3), CellState::ALIVE);
-        grid.set_cell((2, 3), CellState::ALIVE);
+        grid.set_cell((2, 0), CellState::Alive);
+        grid.set_cell((0, 3), CellState::Alive);
+        grid.set_cell((1, 3), CellState::Alive);
+        grid.set_cell((2, 3), CellState::Alive);
+        grid.set_cell((2, 3), CellState::Alive);
 
         let grid_str = serde_json::to_string(&grid).unwrap();
         let actual_value: serde_json::Value = serde_json::from_str(&grid_str).unwrap();
@@ -122,12 +122,12 @@ mod tests {
         let actual_grid: Grid = serde_json::from_value(value).unwrap();
 
         let mut expected_grid = Grid::new((3, 4));
-        expected_grid.set_cell((2, 0), CellState::ALIVE);
-        expected_grid.set_cell((0, 1), CellState::ALIVE);
-        expected_grid.set_cell((1, 1), CellState::ALIVE);
-        expected_grid.set_cell((2, 1), CellState::ALIVE);
-        expected_grid.set_cell((2, 1), CellState::ALIVE);
-        expected_grid.set_cell((0, 3), CellState::ALIVE);
+        expected_grid.set_cell((2, 0), CellState::Alive);
+        expected_grid.set_cell((0, 1), CellState::Alive);
+        expected_grid.set_cell((1, 1), CellState::Alive);
+        expected_grid.set_cell((2, 1), CellState::Alive);
+        expected_grid.set_cell((2, 1), CellState::Alive);
+        expected_grid.set_cell((0, 3), CellState::Alive);
         assert_eq!(&actual_grid, &expected_grid);
     }
 }

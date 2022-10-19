@@ -88,7 +88,7 @@ fn build_random_grid(width: usize, height: usize, alive_ratio: f64) -> Grid {
     (0..height)
         .flat_map(|y| (0..width).map(move |x| (x, y)))
         .filter(|_| rng.gen_bool(alive_ratio))
-        .for_each(|(x, y)| grid.set_cell((x, y), CellState::ALIVE));
+        .for_each(|(x, y)| grid.set_cell((x, y), CellState::Alive));
     grid
 }
 

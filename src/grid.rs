@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum CellState {
-    DEAD,
-    ALIVE,
+    Dead,
+    Alive,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -19,7 +19,7 @@ impl Grid {
             width,
             height
         );
-        let cells = vec![CellState::DEAD; width * height];
+        let cells = vec![CellState::Dead; width * height];
         Grid {
             width,
             height,
@@ -101,18 +101,18 @@ mod tests {
     fn get_cell_in_bounds() {
         let grid = Grid::new((4, 3));
 
-        assert_eq!(grid.get_cell((0, 0)), CellState::DEAD);
-        assert_eq!(grid.get_cell((1, 0)), CellState::DEAD);
-        assert_eq!(grid.get_cell((2, 0)), CellState::DEAD);
-        assert_eq!(grid.get_cell((3, 0)), CellState::DEAD);
-        assert_eq!(grid.get_cell((0, 1)), CellState::DEAD);
-        assert_eq!(grid.get_cell((1, 1)), CellState::DEAD);
-        assert_eq!(grid.get_cell((2, 1)), CellState::DEAD);
-        assert_eq!(grid.get_cell((3, 1)), CellState::DEAD);
-        assert_eq!(grid.get_cell((0, 2)), CellState::DEAD);
-        assert_eq!(grid.get_cell((1, 2)), CellState::DEAD);
-        assert_eq!(grid.get_cell((2, 2)), CellState::DEAD);
-        assert_eq!(grid.get_cell((3, 2)), CellState::DEAD);
+        assert_eq!(grid.get_cell((0, 0)), CellState::Dead);
+        assert_eq!(grid.get_cell((1, 0)), CellState::Dead);
+        assert_eq!(grid.get_cell((2, 0)), CellState::Dead);
+        assert_eq!(grid.get_cell((3, 0)), CellState::Dead);
+        assert_eq!(grid.get_cell((0, 1)), CellState::Dead);
+        assert_eq!(grid.get_cell((1, 1)), CellState::Dead);
+        assert_eq!(grid.get_cell((2, 1)), CellState::Dead);
+        assert_eq!(grid.get_cell((3, 1)), CellState::Dead);
+        assert_eq!(grid.get_cell((0, 2)), CellState::Dead);
+        assert_eq!(grid.get_cell((1, 2)), CellState::Dead);
+        assert_eq!(grid.get_cell((2, 2)), CellState::Dead);
+        assert_eq!(grid.get_cell((3, 2)), CellState::Dead);
     }
 
     #[test]
@@ -135,10 +135,10 @@ mod tests {
     fn set_cell_in_bounds() {
         let mut grid = Grid::new((3, 4));
 
-        grid.set_cell((1, 2), CellState::ALIVE);
+        grid.set_cell((1, 2), CellState::Alive);
 
-        assert_eq!(grid.get_cell((1, 2)), CellState::ALIVE);
-        assert_eq!(grid.get_cell((2, 1)), CellState::DEAD);
+        assert_eq!(grid.get_cell((1, 2)), CellState::Alive);
+        assert_eq!(grid.get_cell((2, 1)), CellState::Dead);
     }
 
     #[test]
@@ -146,7 +146,7 @@ mod tests {
     fn set_cell_x_out_of_bounds() {
         let mut grid = Grid::new((3, 7));
 
-        grid.set_cell((4, 1), CellState::ALIVE);
+        grid.set_cell((4, 1), CellState::Alive);
     }
 
     #[test]
@@ -154,24 +154,24 @@ mod tests {
     fn set_cell_y_out_of_bounds() {
         let mut grid = Grid::new((4, 5));
 
-        grid.set_cell((0, 5), CellState::ALIVE);
+        grid.set_cell((0, 5), CellState::Alive);
     }
 
     #[test]
     fn get_cell_wrapped_negative_x() {
         let mut grid = Grid::new((3, 3));
-        grid.set_cell((2, 0), CellState::ALIVE);
+        grid.set_cell((2, 0), CellState::Alive);
 
-        assert_eq!(grid.get_cell_wrapped((-1, 0)), CellState::ALIVE);
-        assert_eq!(grid.get_cell_wrapped((-4, 0)), CellState::ALIVE);
+        assert_eq!(grid.get_cell_wrapped((-1, 0)), CellState::Alive);
+        assert_eq!(grid.get_cell_wrapped((-4, 0)), CellState::Alive);
     }
 
     #[test]
     fn get_cell_wrapped_positive_x() {
         let mut grid = Grid::new((3, 3));
-        grid.set_cell((2, 0), CellState::ALIVE);
+        grid.set_cell((2, 0), CellState::Alive);
 
-        assert_eq!(grid.get_cell_wrapped((5, 0)), CellState::ALIVE);
-        assert_eq!(grid.get_cell_wrapped((8, 0)), CellState::ALIVE);
+        assert_eq!(grid.get_cell_wrapped((5, 0)), CellState::Alive);
+        assert_eq!(grid.get_cell_wrapped((8, 0)), CellState::Alive);
     }
 }

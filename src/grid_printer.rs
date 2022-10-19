@@ -16,7 +16,7 @@ fn line_chars(grid: &Grid, y: usize) -> String {
 
 fn cell_char(grid: &Grid, (x, y): (usize, usize)) -> &str {
     match grid.get_cell((x, y)) {
-        CellState::DEAD => " ",
-        CellState::ALIVE => "o",
+        CellState::Dead => " ",
+        CellState::Alive => "o",
     }
 }
