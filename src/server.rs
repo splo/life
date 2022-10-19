@@ -1,37 +1,48 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    net::SocketAddr,
+    str::FromStr,
+    sync::{Arc, Mutex},
+};
 
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use axum::{
+    response::{Html, IntoResponse},
+    routing::get,
+    Extension, Json, Router, Server,
+};
 
 use crate::State;
 
-fn index_handler() -> impl Responder {
+async fn index_handler() -> impl IntoResponse {
     static INDEX_HTML: &str = include_str!("index.html");
-    HttpResponse::Ok().body(INDEX_HTML)
+    Html(INDEX_HTML)
 }
 
-fn js_handler() -> impl Responder {
-    static INDEX_HTML: &str = include_str!("index.js");
-    HttpResponse::Ok().body(INDEX_HTML)
+async fn js_handler() -> impl IntoResponse {
+    static INDEX_JS: &str = include_str!("index.js");
+    Html(INDEX_JS)
 }
 
-fn grid_handler(state: web::Data<Arc<Mutex<State>>>) -> impl Responder {
+async fn grid_handler(Extension(state): Extension<Arc<Mutex<State>>>) -> impl IntoResponse {
     let guard = state.lock().expect("Error while locking mutex");
-    HttpResponse::Ok()
-        .content_type("application/json")
-        .body(serde_json::to_string(&guard.grid).expect("Error while serializing grid"))
+    Json(guard.grid.clone())
 }
 
 pub fn run_server(port: u16, data: Arc<Mutex<State>>) {
-    let server = HttpServer::new(move || {
-        App::new()
-            .data(data.clone())
-            .wrap(actix_web::middleware::Logger::default())
-            .route("/", web::get().to(index_handler))
-            .route("/index.js", web::get().to(js_handler))
-            .route("/grid", web::get().to(grid_handler))
-    })
-    .bind(format!("0.0.0.0:{}", port))
-    .expect("Error while binding the socket address");
+    let app = Router::new()
+        .route("/", get(index_handler))
+        .route("/index.js", get(js_handler))
+        .route("/grid", get(grid_handler).layer(Extension(data)));
+    let address = &&SocketAddr::from_str((format!("0.0.0.0:{}", port)).as_str())
+        .expect("Cannot parse address");
     println!("Server running at http://localhost:{}/", port);
-    server.run().expect("Error while running server");
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .expect("Error while starting Tokio runtime")
+        .block_on(async {
+            Server::bind(address)
+                .serve(app.into_make_service())
+                .await
+                .expect("Error while running server");
+        });
 }
