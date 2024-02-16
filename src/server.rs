@@ -7,8 +7,9 @@ use std::{
 use axum::{
     response::{Html, IntoResponse},
     routing::get,
-    Extension, Json, Router, Server,
+    Extension, Json, Router,
 };
+use tokio::net::TcpListener;
 
 use crate::State;
 
@@ -40,8 +41,10 @@ pub fn run_server(port: u16, data: Arc<Mutex<State>>) {
         .build()
         .expect("Error while starting Tokio runtime")
         .block_on(async {
-            Server::bind(address)
-                .serve(app.into_make_service())
+            let listener = TcpListener::bind(address)
+                .await
+                .expect("Error while binding TCP socket");
+            axum::serve(listener, app.into_make_service())
                 .await
                 .expect("Error while running server");
         });
