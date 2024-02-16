@@ -71,7 +71,7 @@ jobs:
               with:
                   directory: target/archive-windows-64
                   filename: "life-${{ steps.get_version.outputs.VERSION }}-windows-64.zip"
-                  path: ../target/x86_64-pc-windows-gnu/release/life.exe
+                  path: ../release/life.exe
             - name: Upload Windows archive
               uses: actions/upload-artifact@v4
               with:
