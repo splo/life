@@ -16,6 +16,15 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
             - name: Compile Linux version
               run: cargo build --release --verbose
             - name: Get version
@@ -39,6 +48,15 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
             - name: Compile Windows version
               run: cargo build --release --verbose
             - name: Get version
@@ -66,6 +84,15 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            - uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
             - name: Compile macOS Version
               run: cargo build --release --verbose
             - name: Get version
