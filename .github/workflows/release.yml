@@ -122,6 +122,7 @@ jobs:
               run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_OUTPUT
             - name: Generate release notes
               run: |
+                  export PATH=$PATH:$(go env GOPATH)/bin
                   go install github.com/git-chglog/git-chglog/cmd/git-chglog@v0.15.4
                   mkdir -p target
                   git-chglog -c .chglog/release.yml $(git describe --tags) > ./target/release_notes.md
