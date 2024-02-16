@@ -1,6 +1,8 @@
 use std::sync::{Arc, Mutex};
 use std::{thread, time};
 
+use clap::error::{ContextKind, ContextValue, ErrorKind};
+use clap::Error;
 use rand::Rng;
 use structopt::StructOpt;
 
@@ -109,6 +111,8 @@ fn run_logic(
 
 fn exit_if(error_condition: bool, message: &str) {
     if error_condition {
-        clap::Error::with_description(message, clap::ErrorKind::InvalidValue).exit()
+        let mut error = Error::new(ErrorKind::InvalidValue);
+        error.insert(ContextKind::Custom, ContextValue::String(message.into()));
+        error.exit();
     }
 }
