@@ -85,11 +85,11 @@ fn main() {
 
 fn build_random_grid(width: usize, height: usize, alive_ratio: f64) -> Grid {
     let mut grid = Grid::new((width, height));
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let (width, height) = (grid.width(), grid.height());
     (0..height)
         .flat_map(|y| (0..width).map(move |x| (x, y)))
-        .filter(|_| rng.gen_bool(alive_ratio))
+        .filter(|_| rng.random_bool(alive_ratio))
         .for_each(|(x, y)| grid.set_cell((x, y), CellState::Alive));
     grid
 }
